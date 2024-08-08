@@ -15,8 +15,9 @@ class AlternatifController extends Controller
     }
     public function store(Request $request)
     {
+        
         $data = $request->validate([
-            'nama_lengkap' => 'required|string|max:255',
+            'nama_alternatif' => 'required|string|max:255',
             'nik' => 'required|string|max:255',
             'alamat' => 'required|string|max:255',
             'telepon' => 'required|string|max:255',

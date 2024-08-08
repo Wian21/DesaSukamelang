@@ -86,20 +86,25 @@ class AlternatifController extends Controller
         }
     }
 
-    public function destroy($id){
-
+    public function destroy($id) {
         try {
-
             $alternatif = Alternatif::findOrFail($id);
+    
+            // Delete related Penilaian records
+            Penilaian::where('alternatif_id', $id)->delete();
+    
+            // Delete the Alternatif
             $alternatif->delete();
-            Penilaian::truncate();
-
+    
+            return response()->json(['msg' => 'Berhasil Menghapus Data'], 200);
+    
         } catch (Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            die("Gagal");
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+            return response()->json(['msg' => 'Gagal Menghapus Data'], 500);
         }
-
     }
+    
+
 
     public function downloadPDF() {
         setlocale(LC_ALL, 'IND');

@@ -25,6 +25,7 @@ Route::get('/crips', [CripsController::class, 'index']);
 Route::get('/penilaian', [PenilaianController::class, 'index']);
 Route::post('/penilaian', [PenilaianController::class, 'store']);
 
+Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'getUser']);
 Route::post('/auth/register', [UserController::class, 'createUser']);
 Route::post('/auth/login', [UserController::class, 'loginUser']);
 
@@ -34,5 +35,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/register', 'App\Http\Controllers\AuthController@register');
 Route::post('/login', 'App\Http\Controllers\AuthController@login');
-Route::post('/logout', 'App\Http\Controllers\AuthController@logout')->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->post('/logout', 'App\Http\Controllers\AuthController@logout');
+
 Route::get('/user', 'App\Http\Controllers\AuthController@user')->middleware('auth:sanctum');
+
+// Route::post('/submit-data', 'DataController@submit')->middleware('check.submission');
+Route::middleware('auth:sanctum')->get('/check-data-submission', [AlternatifController::class, 'checkDataSubmission']);
+// Route::middleware('auth:sanctum')->get('/check-data-submission', [UserController::class, 'checkDataSubmission']);
+// Route::middleware('auth:sanctum')->post('/mark-data-submitted', [UserController::class, 'markDataSubmitted']);

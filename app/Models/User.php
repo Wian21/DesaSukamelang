@@ -24,6 +24,7 @@ class User extends Authenticatable
         'alamat',
         'telepon',
         'keterangan',
+        'is_data_submitted',
     ];
 
     /**

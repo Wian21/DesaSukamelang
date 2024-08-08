@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use PDF;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -20,6 +21,13 @@ class UserController extends Controller
         $data['user'] = User::get();
         return view('admin.user.index',$data);
 
+    }
+
+    public function getUser(Request $request)
+    {
+        return response()->json([
+            'user' => Auth::user()
+        ]);
     }
 
     public function store(Request $request){
