@@ -26,12 +26,13 @@ void _loginUser() async {
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
     );
+    print('Response from loginUser: $response');
 
     if (response['status']) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', response['token']);
       await prefs.setBool('isLoggedIn', true);
-      await prefs.setBool('isDataSubmitted', response['is_data_submitted']); // Store is_data_submitted flag
+      await prefs.setBool('isDataSubmitted', response['is_data_submitted'] ?? false);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => BottomNavBar()),
@@ -55,6 +56,7 @@ void _loginUser() async {
       );
     }
   } catch (e) {
+    print('Login error: $e');
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(

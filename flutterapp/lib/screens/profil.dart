@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:untitled3/screens/preferensi_akun.dart';
 import 'package:untitled3/services/my_api.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -130,9 +131,15 @@ Future<void> _logout(BuildContext context) async {
               ),
             ),
           ),
-          ListTile(
+           ListTile(
             leading: Icon(Icons.person),
             title: Text('Preferensi Akun'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AccountPreferencesPage()),
+              );
+            },
           ),
           Expanded(
             child: Align(
@@ -147,21 +154,6 @@ Future<void> _logout(BuildContext context) async {
         ],
       ),
       backgroundColor: Color.fromARGB(255, 245, 255, 250),
-    );
-  }
-}
-
-class CircleButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  const CircleButton({required this.icon, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(icon),
-      onPressed: onPressed,
     );
   }
 }

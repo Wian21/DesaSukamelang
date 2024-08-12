@@ -61,8 +61,6 @@ class UserController extends Controller
         }
     }
 
-
-
     /**
      * Login The User
      * @param Request $request
@@ -98,6 +96,56 @@ class UserController extends Controller
                 'status' => true,
                 'message' => 'User Logged In Successfully',
                 'token' => $user->createToken("API TOKEN")->plainTextToken
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update User
+     * @param Request $request
+     * @return User
+     */
+    public function updateUser(Request $request)
+    {
+        try {
+            // Validate request
+            $validateUser = Validator::make($request->all(), [
+                'name' => 'sometimes|required|string|max:255',
+                'alamat' => 'sometimes|required|string',
+                'telepon' => 'sometimes|required|string',
+            ]);
+
+            if ($validateUser->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validateUser->errors()
+                ], 401);
+            }
+
+            // Update user information
+            $user = Auth::user();
+            if ($request->has('name')) {
+                $user->name = $request->name;
+            }
+            if ($request->has('alamat')) {
+                $user->alamat = $request->alamat;
+            }
+            if ($request->has('telepon')) {
+                $user->telepon = $request->telepon;
+            }
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'User Updated Successfully',
+                'user' => $user
             ], 200);
 
         } catch (\Throwable $th) {

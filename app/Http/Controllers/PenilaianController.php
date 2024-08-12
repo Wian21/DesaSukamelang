@@ -15,8 +15,7 @@ use PDF;
 class PenilaianController extends Controller
 {
     public function index(){
-        $alternatif = Alternatif::with('penilaian.crips')->get();
-      
+        $alternatif = Alternatif::with('penilaian.crips')->where('status_validasi', 'approved')->get();
         $kriteria = Kriteria::with('crips')->orderBy('id','ASC')->get();
         //return response()->json($alternatif);
         return view('admin.penilaian.index', compact('alternatif','kriteria'));

@@ -54,11 +54,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: _buildIcon(Icons.home, 0),
-            label: '',
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: _buildIcon(Icons.add_circle_rounded, 1),
-            label: '',
+            label: 'Isi Data',
           ),
           // BottomNavigationBarItem(
           //   icon: _buildIcon(Icons.search, 2),
@@ -70,7 +70,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           // ),
           BottomNavigationBarItem(
             icon: _buildIcon(Icons.person, 2),
-            label: '',
+            label: 'Profil',
           ),
         ],
         currentIndex: _selectedIndex,

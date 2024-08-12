@@ -2,10 +2,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lottie/lottie.dart';
-import 'package:http/http.dart' as http;
+// import 'package:untitled3/constants/color.dart';
+import 'package:untitled3/constants/size.dart';
+import 'package:untitled3/models/category.dart';
+import 'package:untitled3/screens/course_screen.dart';
+// import 'package:untitled3/screens/isiData.dart';
+import 'package:untitled3/widgets/circle_button.dart';
 import '../services/my_api.dart';
-import '../widgets/circle_button.dart'; // Pastikan Anda mengimpor CircleButton
+import 'package:http/http.dart' as http;
 
 class FeaturedScreen extends StatefulWidget {
   const FeaturedScreen({Key? key}) : super(key: key);
@@ -20,12 +24,12 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 245, 255, 250),
+        backgroundColor: Color.fromARGB(255, 245, 255, 250),
         body: Column(
           children: const [
             CustomAppBar(),
             Expanded(
-              child: Body(),
+              child: Body(), // Tambahkan Expanded di sini
             ),
           ],
         ),
@@ -42,7 +46,7 @@ class Body extends StatelessWidget {
     final String? token = sharedPreferences.getString('token');
 
     final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/api/user'),
+      Uri.parse('${ApiService.baseUrl}/api/user'), // Use baseUrl from ApiService
       headers: {'Authorization': 'Bearer $token'},
     );
 
@@ -59,6 +63,7 @@ class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      // Tambahkan SingleChildScrollView di sini
       child: Column(
         children: [
           Padding(
@@ -70,47 +75,44 @@ class Body extends StatelessWidget {
                   "Informasi Bantuan",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
+                // TextButton(
+                //       onPressed: () {
+                //         Navigator.push(
+                //           context,
+                //           MaterialPageRoute(builder: (context) => IsiDataPage()),
+                //         );
+                //       },
+                //       child: Text(
+                //         "Isi Data",
+                //         style: Theme.of(context)
+                //             .textTheme
+                //             .bodyMedium
+                //             ?.copyWith(color: kPrimaryColor),
+                //       ),
+                //     ),
               ],
             ),
           ),
-          // const SizedBox(height: 20),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFFEFAE0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  offset: const Offset(0, 2),
-                  blurRadius: 6.0,
-                ),
-              ],
-              borderRadius: BorderRadius.circular(10),
+          GridView.builder(
+            shrinkWrap: true,
+            physics:
+                NeverScrollableScrollPhysics(), // Tambahkan ini untuk menghindari konflik scroll
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 8,
             ),
-            margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-              Center(
-                child: Lottie.asset('assets/animation/lamp.json', width: 200, height: 200),
-              ),
-                const SizedBox(height: 20),
-                Text(
-        "1. Isi data terlebih dahulu, dengan baik dan benar",
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontFamily: 'Manrope'),
-      ),
-      const SizedBox(height: 10),
-      Text(
-        "2. Data yang terkirim akan diproses secepatnya",
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontFamily: 'Manrope'),
-      ),
-      const SizedBox(height: 10),
-      Text(
-        "3. Hasil pengumuman akan diberikan oleh RT setempat",
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontFamily: 'Manrope'),
-      ),
-              ],
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.8,
+              crossAxisSpacing: 20,
+              mainAxisSpacing: 24,
             ),
+            itemBuilder: (context, index) {
+              return CategoryCard(
+                category: categoryList[index],
+              );
+            },
+            itemCount: categoryList.length,
           ),
         ],
       ),
@@ -118,15 +120,71 @@ class Body extends StatelessWidget {
   }
 }
 
+class CategoryCard extends StatelessWidget {
+  final Category category;
+  const CategoryCard({
+    Key? key,
+    required this.category,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const CourseScreen(),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(1),
+              blurRadius: 4.0,
+              spreadRadius: .05,
+            ), //BoxShadow
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: Image.asset(
+                category.thumbnail,
+                height: kCategoryCardImageSize,
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(category.name),
+            Text(
+              "${category.noOfCourses.toString()} courses",
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({Key? key}) : super(key: key);
+  const CustomAppBar({
+    Key? key,
+  }) : super(key: key);
 
   Future<String> getUsername() async {
     final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     final String? token = sharedPreferences.getString('token');
 
     final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/api/user'),
+      Uri.parse('${ApiService.baseUrl}/api/user'), // Use baseUrl from ApiService
       headers: {'Authorization': 'Bearer $token'},
     );
 
@@ -176,9 +234,9 @@ class CustomAppBar extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleLarge,
                     );
                   } else if (snapshot.hasError) {
-                    return const Text('Failed to load username');
+                    return Text('Failed to load username');
                   }
-                  return const CircularProgressIndicator();
+                  return CircularProgressIndicator();
                 },
               ),
               CircleButton(
@@ -190,6 +248,7 @@ class CustomAppBar extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
+          // const SearchTextField()
         ],
       ),
     );

@@ -22,32 +22,56 @@ class AlternatifController extends Controller
 
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
+        // Validasi input
         $this->validate($request, [
-
             'nama_alternatif' => 'required|string',
             'nik' => 'required|string',
             'alamat' => 'required|string',
             'telepon' => 'required|string',
-
+            'foto_ktp' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'foto_kk' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',  
         ]);
-
+    
         try {
-
+            // Buat instance model Alternatif
             $alternatif = new Alternatif();
             $alternatif->nama_alternatif = $request->nama_alternatif;
             $alternatif->nik = $request->nik;
             $alternatif->alamat = $request->alamat;
             $alternatif->telepon = $request->telepon;
+            $alternatif->status_validasi = 'pending'; // Nilai default
+    
+            // Upload dan simpan foto KTP
+            if ($request->hasFile('foto_ktp')) {
+                $file = $request->file('foto_ktp');
+                $filename = time() . '_ktp.' . $file->getClientOriginalExtension();
+                $path = public_path('img/ktp');
+                $file->move($path, $filename);
+                $alternatif->foto_ktp = $filename;
+            }
+    
+            // Upload dan simpan foto KK
+            if ($request->hasFile('foto_kk')) {
+                $file = $request->file('foto_kk');
+                $filename = time() . '_kk.' . $file->getClientOriginalExtension();
+                $path = public_path('img/kk');
+                $file->move($path, $filename);
+                $alternatif->foto_kk = $filename;
+            }
+    
+            // Simpan data ke database
             $alternatif->save();
-            return back()->with('msg','Berhasil Menambahkan Data');
-
+    
+            return back()->with('msg', 'Berhasil Menambahkan Data');
         } catch (Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            die("Gagal");
+            \Log::emergency("File:" . $e->getFile(). " Line:" . $e->getLine(). " Message:" . $e->getMessage());
+            return back()->with('error', 'Gagal Menambahkan Data');
         }
-
     }
+    
+
 
 
     public function edit($id)
@@ -59,32 +83,45 @@ class AlternatifController extends Controller
 
     public function update(Request $request, $id)
     {
-
-        $this->validate($request, [
-
-            'nama_alternatif' => 'required|string',
-            'nik' => 'required|string',
+        // Validasi input untuk memastikan data yang dimasukkan sesuai dengan harapan
+        $request->validate([
+            'nama_alternatif' => 'required|string|max:255',
+            'nik' => 'required|numeric',
             'alamat' => 'required|string',
-            'telepon' => 'required|string',
-
+            'telepon' => 'required|numeric',
+            'foto_ktp' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'foto_kk' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'status_validasi' => 'required|string|in:pending,approved,rejected',
         ]);
-
-        try {
-
-            $alternatif = Alternatif::findOrFail($id);
-            $alternatif->update([
-                'nama_alternatif' => $request->nama_alternatif,
-                'nik' => $request->nik,
-                'alamat' => $request->alamat,
-                'telepon' => $request->telepon
-            ]);
-            return back()->with('msg','Berhasil Mengubah Data');
-
-        } catch (Exception $e) {
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            die("Gagal");
+    
+        $data = $request->except(['_token', '_method', 'foto_ktp', 'foto_kk']);
+    
+        // Handle foto_ktp upload
+        if ($request->hasFile('foto_ktp')) {
+            $file = $request->file('foto_ktp');
+            $filename =  time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('img/ktp'), $filename);
+            $data['foto_ktp'] = $filename;
+        } else {
+            $data['foto_ktp'] = Alternatif::where('id', $id)->value('foto_ktp');
         }
+    
+        // Handle foto_kk upload
+        if ($request->hasFile('foto_kk')) {
+            $file = $request->file('foto_kk');
+            $filename =  time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('img/kk'), $filename);
+            $data['foto_kk'] = $filename;
+        } else {
+            $data['foto_kk'] = Alternatif::where('id', $id)->value('foto_kk');
+        }
+    
+        // Update the Alternatif record
+        Alternatif::where('id', $id)->update($data);
+    
+        return redirect()->route('alternatif.index')->with('success', 'Alternatif berhasil diubah');
     }
+    
 
     public function destroy($id) {
         try {

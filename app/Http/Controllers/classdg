@@ -1,0 +1,85 @@
+@startuml
+entity Users {
+  *id: int
+  name: string
+  email: string
+  email_verified_at: timestamp
+  password: string
+  alamat: string
+  telepon: string
+  keterangan: string
+  remember_token: string
+  created_at: Date
+  updated_at: Date
+  +login():
+  +logout():
+  +daftar():
+  +index(): View
+  +store(): 
+  +edit(int): View
+  +update(Request, int): 
+  +destroy(int): 
+  +cetakPDF():
+}
+
+entity Penilaian {
+  *id: int
+  alternatif_id: int
+  crips_id: int
+  created_at: Date
+  updated_at: Date
+  +store(): 
+  +edit(int): View
+  +update(Request, int): 
+  +destroy(int): 
+  +cetakPDF():
+}
+
+entity Alternatif {
+  *id: int
+  nama_alternatif: string
+  nik: string
+  alamat: string
+  telepon: string
+  foto_ktp: string
+  foto_kk: string
+  status_validasi: bool
+  created_at: Date
+  updated_at: Date
+  +store(): 
+  +edit(int): View
+  +update(Request, int): 
+  +destroy(int): 
+  +cetakPDF():
+}
+
+entity Crips {
+  *id: int
+  kriteria_id: int
+  nama_crips: string
+  bobot: int
+  created_at: Date
+  updated_at: Date
+  +store(): 
+  +edit(int): View
+  +update(Request, int): 
+  +destroy(int): 
+}
+
+entity Kriteria {
+  *id: int
+  nama_kriteria: string
+  attribut: string
+  bobot: int
+  created_at: Date
+  updated_at: Date
+  +index(): View
+  +store(): 
+  +edit(int): View
+  +update(Request, int): 
+  +destroy(int): 
+  +show(int): View
+  +cetakPDF():
+}
+
+@enduml

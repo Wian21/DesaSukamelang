@@ -19,7 +19,7 @@ class AlgoritmaController extends Controller
     public function index()
     {
        
-        $alternatif = Alternatif::with('penilaian.crips')->get();
+        $alternatif = Alternatif::with('penilaian.crips')->where('status_validasi','approved')->get();
         $kriteria = Kriteria::with('crips')->orderBy('nama_kriteria','ASC')->get();
         $penilaian = Penilaian::with('crips','alternatif')->get();
          if (count($penilaian) == 0) {

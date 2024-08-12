@@ -3,6 +3,9 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:untitled3/services/my_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lottie/lottie.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+// import 'package:dio/dio.dart';
 
 class IsiDataPage extends StatefulWidget {
   @override
@@ -11,6 +14,36 @@ class IsiDataPage extends StatefulWidget {
 
 class _IsiDataPageState extends State<IsiDataPage> {
   final _formKey = GlobalKey<FormBuilderState>();
+
+  File? _fotoKtp;
+  File? _fotoKk;
+  String? _fotoKtpName;
+  String? _fotoKkName;
+
+  final ImagePicker _picker = ImagePicker();
+
+Future<void> _pickImage(String imageType) async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+        if (pickedFile != null) {
+      setState(() {
+        if (imageType == 'foto_ktp') {
+          _fotoKtp = File(pickedFile.path);
+          _fotoKtpName = pickedFile.name;
+        } else if (imageType == 'foto_kk') {
+          _fotoKk = File(pickedFile.path);
+          _fotoKkName = pickedFile.name;
+        }
+      });
+    } else {
+      // Handle the case where no image was picked
+      print('No image selected.');
+    }
+  }
+
+
+
+
   int _currentStep = 0;
   Map<int, List<dynamic>> _cripsGroupedByKriteria = {};
   bool _isDataSubmitted = false;
@@ -106,9 +139,41 @@ Future<void> _checkIfDataSubmitted() async {
             ),
             _buildTextField('nik', 'NIK'),
             _buildTextField('alamat', 'Alamat'),
-            _buildTextField('telepon', 'Telepon'),
+            _buildTextField('telepon', 'Telepon'),SizedBox(height: 20),
+            SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () => _pickImage('foto_ktp'),
+            child: Text('Upload Foto KTP'),
+          ),
+          if (_fotoKtp != null) ...[
+            SizedBox(height: 10),
+            Image.file(
+              _fotoKtp!,
+              height: 100,
+              width: 100,
+              fit: BoxFit.cover,
+            ),
+            SizedBox(height: 5),
+            Text('Selected KTP Image: ${_fotoKtpName ?? "Unknown"}'),
           ],
-        ),
+          SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () => _pickImage('foto_kk'),
+            child: Text('Upload Foto KK'),
+          ),
+          if (_fotoKk != null) ...[
+            SizedBox(height: 10),
+            Image.file(
+              _fotoKk!,
+              height: 100,
+              width: 100,
+              fit: BoxFit.cover,
+            ),
+            SizedBox(height: 5),
+            Text('Selected KK Image: ${_fotoKkName ?? "Unknown"}'),
+          ],
+        ],
+      ),
         isActive: _currentStep == 0,
       ),
       Step(
@@ -145,28 +210,38 @@ Future<void> _checkIfDataSubmitted() async {
         _currentStep += 1;
       });
     } else {
-      if (_formKey.currentState!.saveAndValidate()) {
-        final formData = _formKey.currentState!.value;
+     if (_formKey.currentState!.saveAndValidate()) {
+  final formData = _formKey.currentState!.value;
 
-        print('Form Data: $formData');
+  print('Form Data: $formData');
 
-        final String? nama_alternatif = formData['nama_alternatif'];
-        final String? nik = formData['nik'];
-        final String? alamat = formData['alamat'];
-        final String? telepon = formData['telepon'];
+ final String? nama_alternatif = formData['nama_alternatif'];
+  final String? nik = formData['nik'];
+  final String? alamat = formData['alamat'];
+  final String? telepon = formData['telepon'];
 
-        if (nama_alternatif == null || nik == null || alamat == null || telepon == null) {
-          print('One or more required fields are null');
-          return;
-        }
+  if (nama_alternatif == null || nik == null || alamat == null || telepon == null) {
+    print('One or more required fields are null');
+    return;
+  }
 
-        try {
-          final alternatifResponse = await ApiService.storeAlternatif(
-            nama_alternatif: nama_alternatif,
-            nik: nik,
-            alamat: alamat,
-            telepon: telepon,
-          );
+if (_fotoKtp == null || _fotoKk == null) {
+  print('One or more required images are missing');
+  return;
+}
+
+final File fotoKtpFile = _fotoKtp!;
+final File fotoKkFile = _fotoKk!;
+
+  try {
+    final alternatifResponse = await ApiService.storeAlternatif(
+      nama_alternatif: nama_alternatif,
+      nik: nik,
+      alamat: alamat,
+      telepon: telepon,
+      foto_ktp: fotoKtpFile,
+      foto_kk: fotoKkFile,
+    );
 
           Map<String, dynamic> penilaianData = {
             'crips_id': {
@@ -277,6 +352,7 @@ Widget build(BuildContext context) {
   return Scaffold(
     backgroundColor: Color.fromARGB(255, 245, 255, 250),
     appBar: AppBar(
+    backgroundColor: Color.fromARGB(255, 245, 255, 250),
       title: Text('Formulir Pengisian Data'),
       automaticallyImplyLeading: false,
     ),

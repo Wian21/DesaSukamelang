@@ -6,6 +6,7 @@
     @include('layouts/_partials/head')
 
     @yield('css')
+    @stack('css') <!-- Add this line to load pushed CSS -->
 
 </head>
 
@@ -15,9 +16,7 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-
         @include('layouts/_partials/sidebar')
-
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->
@@ -27,9 +26,7 @@
             <div id="content">
 
                 <!-- Topbar -->
-                
                 @include('layouts/_partials/topbar')
-
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
@@ -38,13 +35,10 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">@yield('judul')</h1>
-                        
                     </div>
 
                     <!-- Content Row -->
-            
                     @yield('content')
-
                     <!-- Content Row -->
 
                 </div>
@@ -92,16 +86,18 @@
     </div>
 
     <!-- Bootstrap core JavaScript-->
-    <script src="{{ asset ('vendor/jquery/jquery.min.js')}}"></script>
-    <script src="{{ asset ('vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="{{ asset ('vendor/jquery-easing/jquery.easing.min.js')}}"></script>
+    <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 
     <!-- Custom scripts for all pages-->
     <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+    
 
     @yield('js')
+    @stack('js') <!-- Add this line to load pushed JS -->
     
 </body>
 

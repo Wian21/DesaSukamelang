@@ -17,8 +17,11 @@ use App\Http\Controllers\Api\CripsController;
 |
 */
 
-Route::get('/alternatif', [AlternatifController::class, 'index']);
-Route::post('/alternatif', [AlternatifController::class, 'store']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/alternatif', [AlternatifController::class, 'index']);
+    Route::post('/alternatif', [AlternatifController::class, 'store']);
+});
+
 
 Route::get('/crips', [CripsController::class, 'index']);
 
@@ -38,8 +41,8 @@ Route::post('/login', 'App\Http\Controllers\AuthController@login');
 Route::middleware('auth:sanctum')->post('/logout', 'App\Http\Controllers\AuthController@logout');
 
 Route::get('/user', 'App\Http\Controllers\AuthController@user')->middleware('auth:sanctum');
-
+Route::middleware('auth:sanctum')->put('/user/update', [UserController::class, 'updateUser']);
 // Route::post('/submit-data', 'DataController@submit')->middleware('check.submission');
-Route::middleware('auth:sanctum')->get('/check-data-submission', [AlternatifController::class, 'checkDataSubmission']);
+// Route::middleware('auth:sanctum')->get('/check-data-submission', [AlternatifController::class, 'checkDataSubmission']);
 // Route::middleware('auth:sanctum')->get('/check-data-submission', [UserController::class, 'checkDataSubmission']);
 // Route::middleware('auth:sanctum')->post('/mark-data-submitted', [UserController::class, 'markDataSubmitted']);
