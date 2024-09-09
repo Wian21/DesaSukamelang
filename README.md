@@ -18,7 +18,7 @@ Ini merupakan aplikasi web sederhana untuk mencari warga yang berhak menerima ba
 
 ## Installation
 
-1. git clone https://github.com/capcay464/laravel9-SPK
+1. git clone https://github.com/Wian21/DesaSukamelang
 2. cd laravel9-SPK
 3. composer install
 4. copy .env.example .env || cp .env.example .env
