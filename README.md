@@ -1,14 +1,4 @@
-# Sistem Pendukung Keputusan Penerima Bantuan Sosial Metode SAW
-
-Ini merupakan aplikasi web sederhana untuk mencari warga yang berhak menerima bantuan menggunakan metode SAW, Web ini menggunakan Laravel 9 sebagai backend framework dan Bootsrap 5 sebagai frontend. 
-
-## Features
-
-- Menetukan warga yang paling berhak mendapat bantuan sosial menggunakan metode SAW yang memungkinkan perhitungan secara akurat.
-- Mencetak hasil laporan dalam format file PDF.
-- Menggunakan Laravel 9 sebagai backend.
-- Menggunakan Bootsrap 5 sebagai frontend yang responsive dan modern.
-
+# Sistem Pendukung Keputusan Penerima Bantuan Sosial Metode SAW Desa Sukamelang
 
 ## Requirements
 
